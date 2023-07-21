@@ -1,7 +1,9 @@
 /*Setup grid variables*/
 let o = Object(null);
 let g = Object(null);
-const mowse = {phi:90, x:0, y:1};
+let mouse = Object(null);
+let d;
+let theta;
 
 //Time variable
 let t = 0;
@@ -29,16 +31,20 @@ function draw() {
 			opac = parseInt(map (slider, 0, 3000, 255, 100, true));
 		}
 	
+	mouse = createVector(mouseX, mouseY);
+
     background('black');
-    stroke(255, 100, 75, 255);
-    strokeWeight(5);
+    // stroke(255, 100, 75, 255);
+    // strokeWeight(5);
 	
-	translate(0,0);
+	// translate(0,0);
 	g.displayGrid(true, true, opac, opac, null, null);
 	//drawGrid();
 
+	d = p5.Vector.sub(mouse, g.O);
 	angleMode(DEGREES);
-	mouse_track();
+	theta = d.heading();
+	console.log("theta = " + theta.toFixed(2));
 
 	noFill();
 	//circle
@@ -50,8 +56,8 @@ function draw() {
 	circle(g.O.x, g.O.y, g.inc*2+1);
 
 	push();
-	translate(width/2, height/2);
-	rotate(mowse.phi);
+	translate(g.O.x, g.O.y);
+	rotate(theta + 90);
 	ship.display(0, 0, g.inc);
 	pop();
 
@@ -80,27 +86,6 @@ function keyPressed() {
 }
 
 
-function mouse_track(draw_line = false) {
-	let o = {x:g.O.x, y:g.O.y};
-	angleMode(DEGREES);
-	let phi = atan2(o.y - mouseY, mouseX - o.x);
-	let c_p = cos(phi);
-	let s_p = sin(phi);
-	
-	mowse.phi = 90 - phi.toFixed(2);
-	mowse.x = c_p.toFixed(2);
-	mowse.y = s_p.toFixed(2);
-	// console.log("phi = " + mowse.phi);
-	// console.log("cos(phi) = " + mowse.x + "\tsin(phi) = " + mowse.y);
-
-	if(draw_line) {
-		console.log("x = " + (cos(360-phi)*g.inc) + "\ty = " + (sin(360+phi)* g.inc));
-		strokeWeight(3);
-		stroke(250, 150, 55);
-		line(o.x, o.y, o.x + int(cos(360 - phi) * g.inc), o.y - int(sin(360 + phi) * g.inc));
-	}
-}
-
 function throttle() {
 	let throttle;
 	const thrust = createVector(0,0);
@@ -110,24 +95,23 @@ function throttle() {
 		lower_dim = height;
 	} 
 
-	const d = dist(mouseX, mouseY, width/2, height/2);
-	console.log("mouse is " + d + " away from x:" + width/2 + "  y:" + height/2);
-	if(abs(d) > g.inc && abs(d) < lower_dim/2) { // mouse is between ship and edge of canvas
-		console.log(lower_dim/2 + " > " + d + " > " + g.inc);
-		throttle = map(d, g.inc, lower_dim/2, 0, 10, true);
-	} else if (d < g.inc){
+	// console.log("mouse is " + d.mag() + " away from x:" + width/2 + "  y:" + height/2);
+	if(abs(d.mag()) > g.inc && abs(d.mag()) < lower_dim/2) { // mouse is between ship and edge of canvas
+		// console.log(lower_dim/2 + " > " + d.mag() + " > " + g.inc);
+		throttle = map(d.mag(), g.inc, lower_dim/2, 0, 10, true);
+	} else if (d.mag() < g.inc){
 		throttle = 0;
-		console.log("d < inc");
-		console.log(d + " < " + g.inc);
+		// console.log("d.mag() < inc");
+		// console.log(d.mag() + " < " + g.inc);
 	} else { //mouse is off canvas
 		throttle = 10;
-		console.log("d is > lower_dim");
-		console.log(d + " > " + lower_dim);
+		// console.log("d.mag() is > lower_dim");
+		// console.log(d.mag() + " > " + lower_dim);
 	}
 	console.log("throttle: " + throttle);
 
-	thrust.x = parseFloat((throttle * mowse.x * (-1)).toFixed(2));
-	thrust.y = parseFloat((throttle * mowse.y).toFixed(2));
+	thrust.x = parseFloat((throttle * cos(theta) * (-1)).toFixed(2));
+	thrust.y = parseFloat((throttle * sin(theta) * (-1)).toFixed(2));
 	console.log("thrust.x = " + thrust.x + "\nthrust.y = " + thrust.y);
 
 	g.v.set(thrust)
