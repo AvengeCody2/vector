@@ -29,7 +29,9 @@ function draw() {
 	mouse = createVector(mouseX, mouseY);
 
     background('black');
-	g.displayGrid(true, true, opac, opac, null, null);
+	g.dot_opacity = opac;
+	g.line_opacity = opac;
+	g.displayGrid(true, true);
 	//drawGrid();
 
 	d = p5.Vector.sub(mouse, g.O);

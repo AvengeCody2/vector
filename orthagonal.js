@@ -9,8 +9,15 @@ class Ortha_Grid{
 	#pos;
 	#v;
 	#corners;
+	#dot_opacity
+	#dot_weight
+	#line_opacity
+	#line_weight
 
-	constructor(max_width, max_height, increment = 48) {
+
+	constructor(max_w = windowWidth, max_h = windowHeight, increment = 48) {
+		this.max_w = max_w;
+		this.max_h = max_h;
 		this.ROWS = new Map();
 		this.COLS = new Map();
 		
@@ -28,22 +35,29 @@ class Ortha_Grid{
         //translated by...
         this.#pos = createVector(0,0);
 
-        this.dot_opacity = 255;
-		this.dot_weight = 4;
-		this.line_opacity = 200;
-		this.line_weight = 1;
+        this.#dot_opacity = 255;
+		this.#dot_weight = 4;
+		this.#line_opacity = 200;
+		this.#line_weight = 1;
 
 		this.#cosX = parseInt(COSx * this.#inc);
 		this.grid_lines = [];
+		this.#corners = false;
 
 		this.inc = increment;
-		this.#corners = false;
 	}
-	
+
+
+	get corners() {
+		return this.#corners;
+	}
+
 	set corners(b){
 		if(typeof b === "boolean") {
 			this.#corners = b;
 			this.makeGridLines(this.#corners);
+		} else {
+			TypeError();
 		}
 	}
 
@@ -94,7 +108,7 @@ class Ortha_Grid{
 		}
 	}
 	
-	calculateCanvas(max_width = windowWidth, max_height = windowHeight) {
+	calculateCanvas(max_width = this.max_w, max_height = this.max_h) {
 		let canvasW = 0, canvasH = 0, tiles = 0;
 		
 		if (max_width >= max_height) {
@@ -120,58 +134,82 @@ class Ortha_Grid{
 
 	}
 
-	dot_opac(o = null) {
+	get dot_opacity() {
+		return this.#dot_opacity
+	}
+
+	set dot_opacity(o) {
 		if(Number.isInteger(o)) {
-			if(o >= 0 && o <= 255) {this.dot_opacity = o;}
-			else if (o < 0) {this.dot_opacity = 0;}
-			else {this.dot_opacity = 255;}
-			//console.log("dot_opac = " + this.dot_opacity);
-		} else if(o != null) {
-			console.log("Ortha_grid.dot_opac() called with invalid argument o = " + o +".");
+			if(o >= 0 && o <= 255) {
+				this.#dot_opacity = o;
+			} else if (o < 10) {
+				this.#dot_opacity = 10;
+				console.log("dot_opacity set too low: " + o + " < 10.\nSetting dot_opacity to 10.")
+			} else {
+				this.#dot_opacity = 255;
+				console.log("dot_opacity set too high: " + o + " > 255.\nSetting dot_opacity to 255.")
+			}
+		} else {
+			TypeError();
 		}
-		
-		return this.dot_opacity;
 	}
 	
-	dot_thick(s = null) {
-		if(Number.isInteger(s)) {
-			if(s >= 0 && s <= 50) {this.dot_weight = s;}
-			else if (s < 0) {this.dot_weight = 0;}
-			else {this.dot_weight = 255;}
-			console.log("dot_thick = " + this.dot_weight);
-		} else if(s != null) {
-			console.log("Ortha_grid.dot_thick() called with invalid argument s = " + s +".");
-		}
-		
-		return this.dot_weight;
+	get dot_weight() {
+		return this.#dot_weight
 	}
-	
-	line_opac(o = null) {
+
+	set dot_weight(w) {
+		if(Number.isInteger(w)) {
+			if(w >= 0 && w <= this.#inc/4) {
+				this.#dot_weight = w;
+			} else if (w < 1) {
+				this.#dot_weight = 1;
+				console.log("dot_weight set too low: " + w + " < 1.\nSetting dot_opacity to 1.")
+			} else {
+				this.#dot_weight = round(this.#inc/4);
+				console.log("dot_weight set too high: " + w + " > " + round(this.#inc/4) + ".\nSetting dot_opacity to 255.")
+			}
+		} else {
+			TypeError();
+		}
+	}
+
+	set line_opacity(o) {
 		if(Number.isInteger(o)) {
-			if(o >= 0 && o <= 255) {this.line_opacity = o;}
-			else if (o < 0) {this.line_opacity = 0;}
-			else {this.line_opacity = 50;}
-			//console.log("line_opac = " + this.line_opacity);
-		} else if(o != null) {
-			console.log("Ortha_grid.line_opac() called with invalid argument o = " + o +".");
+			if(o >= 0 && o <= 255) {
+				this.#line_opacity = o;
+			} else if (o < 10) {
+				this.#line_opacity = 10;
+				console.log("line_opacity set too low: " + o + " < 10.\nSetting line_opacity to 10.")
+			} else {
+				this.#line_opacity = 255;
+				console.log("line_opacity set too high: " + o + " > 255.\nSetting line_opacity to 255.")
+			}
+		} else {
+			TypeError();
 		}
-		
-		return this.line_opacity;
 	}
 	
-	line_thick(s = null) {
-		if(Number.isInteger(s)) {
-			if(s >= 0 && s <= 15) {this.line_weight = s;}
-			else if (s < 0) {this.line_weight = 0;}
-			else {this.line_weight = 15;}
-			//console.log("line_thick = " + this.line_weight);
-		} else if(s != null) {
-			console.log("Ortha_grid.line_thick() called with invalid argument s = " + s +".");
-		}
-		
-		return this.line_weight;
+	get line_weight() {
+		return this.#line_weight
 	}
-	
+
+	set line_weight(w) {
+		if(Number.isInteger(w)) {
+			if(w >= 0 && w <= this.#inc/5) {
+				this.#line_weight = w;
+			} else if (w < 1) {
+				this.#line_weight = 1;
+				console.log("line_weight set too low: " + w + " < 1.\nSetting line_opacity to 1.")
+			} else {
+				this.#line_weight = round(this.#inc/5);
+				console.log("line_weight set too high: " + w + " > " + round(this.#inc/5) + ".\nSetting line_opacity to 255.")
+			}
+		} else {
+			TypeError();
+		}
+	}
+		
 	get v() {
 		return this.#v;
 	}
@@ -246,25 +284,11 @@ class Ortha_Grid{
 	}
 	
 		
-	displayGrid(draw_lines = true, draw_points = true, dot_opacity = null, line_opacity = null, dot_size = null, line_size = null) {
+	displayGrid(draw_lines = true, draw_points = true) {
 		this.moveGrid();
 
-		if	(dot_opacity) {
-			this.dot_opac(dot_opacity);
-		}
-		if (dot_size) {
-			this.dot_thick(dot_size);
-		}
-		
 		if (draw_points) {
-			this.drawGridPoints(this.dot_opac());
-		}
-		
-		if (line_opacity) {
-			this.line_opac(line_opacity);
-		}
-		if (line_size) {
-			this.line_thick(line_size);
+			this.drawGridPoints();
 		}
 		
 		if (draw_lines) {
@@ -275,7 +299,7 @@ class Ortha_Grid{
 	
 	//draw the vertices of the orthagonal grid
 	drawGridPoints() {
-		strokeWeight(this.dot_thick());	
+		strokeWeight(this.#dot_weight);	
 		noFill();
 
         push();
@@ -283,7 +307,7 @@ class Ortha_Grid{
 		//Iterate through ROWS and COLS to create points
 		for(const [yk, yv] of this.ROWS.entries()) {
 			for(const [xk, xv] of this.COLS.entries()) {
-				stroke(250, 255, 255, this.dot_opac() - (4 * abs(xk))-(8 * abs(yk)));
+				stroke(250, 255, 255, this.#dot_opacity - (4 * abs(xk))-(8 * abs(yk)));
 				if (yk%2 == 0 && xk%2 == 0) {
 					point(xv, yv);
 				} else if(yk%2 != 0 && xk%2 != 0) {
@@ -295,7 +319,7 @@ class Ortha_Grid{
 	}
 	
 	//create vector library of orthagonal lines to be called in drawGridLines()
-	makeGridLines(corners_enabled = false) {	
+	makeGridLines() {	
 		this.grid_lines = [];
 		//Use cartesian grid to align vertices
 		const x_max = (this.COLS.size-1)/2;
@@ -321,8 +345,10 @@ class Ortha_Grid{
 			})
 		}
 		
-
-		if(corners_enabled) {
+		/*not working correctly
+			only bottom left corner is taken out.*/
+		if(this.#corners) {
+			x_max = this.COLS.keys(this.#wide);
 			// fill in the corners
 			for(p1.x = 2; p1.x < x_max; p1.x += 2) {
 				p1.y = y_min;
@@ -361,8 +387,8 @@ class Ortha_Grid{
 
 	drawGridLines() {
 		noFill();
-		let opacity = this.line_opac();
-		strokeWeight(this.line_thick());
+		let opacity = this.#line_opacity;
+		strokeWeight(this.#line_weight);
 		
 		//draw vertical grid lines
 		push();
@@ -392,11 +418,11 @@ class Ortha_Grid{
 			//Code for drawing thick hex around border
 			stroke(50,255,17,opacity - (4 * abs(p1.y)));
 			if(p1.y == y_min) {
-				strokeWeight(this.line_thick()+4);
+				strokeWeight(this.#line_weight()+4);
 				//these lines stay static
 				v.x = 0, v.y = 0;
 			} else {
-				strokeWeight(this.line_thick());
+				strokeWeight(this.#line_weight());
 				//add in motion
 				v.x = this.#pos.x, v.y = this.#pos.y;
 			}			
