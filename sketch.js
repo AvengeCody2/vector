@@ -13,13 +13,8 @@ let ship;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   g = new Ortha_Grid(windowWidth, windowHeight, 50);
-  h = new Ortha_Grid(width, height, 100);
-  //g = new Grid(windowWidth, windowHeight, 50);
-
   console.log("origin at (" + g.O.x + ", " + g.O.y + ")")
-  ship = new Fighter(g.O.x, g.O.y, g.inc);
-  //background(30);
-  g.displayGrid(false, false);
+  ship = new Fighter();
 }
 
 function draw() {
@@ -34,10 +29,6 @@ function draw() {
 	mouse = createVector(mouseX, mouseY);
 
     background('black');
-    // stroke(255, 100, 75, 255);
-    // strokeWeight(5);
-	
-	// translate(0,0);
 	g.displayGrid(true, true, opac, opac, null, null);
 	//drawGrid();
 

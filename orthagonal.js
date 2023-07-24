@@ -4,6 +4,7 @@ class Ortha_Grid{
     #inc;
     #wide;
     #high;
+	#O
 	#cosX;
 	#pos;
 	#v;
@@ -15,11 +16,11 @@ class Ortha_Grid{
 		
 		this.#inc = increment;
 
-        this.wide = null;
-		this.high = null;				
+        this.#wide = null;
+		this.#high = null;				
 
         //origin
-        this.O = createVector(0, 0);
+        this.#O = createVector(0, 0);
 		
 		//velocity
 		this.#v = createVector(0, 0);
@@ -35,7 +36,7 @@ class Ortha_Grid{
 		this.#cosX = parseInt(COSx * this.#inc);
 		this.grid_lines = [];
 
-		this.inc = this.#inc;
+		this.inc = increment;
 		this.#corners = false;
 	}
 	
@@ -45,6 +46,18 @@ class Ortha_Grid{
 			this.makeGridLines(this.#corners);
 		}
 	}
+
+	get O() {
+		return this.#O;
+	}
+
+	get wide() {
+        return this.#wide;
+    }
+
+	get high() {
+        return this.#high;
+    }
 
     get inc() {
         return this.#inc;
@@ -103,6 +116,8 @@ class Ortha_Grid{
 		this.#high = canvasH;
 		
 		resizeCanvas(canvasW, canvasH);
+		this.#O.set(createVector(this.#wide/2, this.#high/2));
+
 	}
 
 	dot_opac(o = null) {
@@ -175,12 +190,11 @@ class Ortha_Grid{
 	mapOrthaGrid() {
 		this.ROWS.clear();
 		this.COLS.clear();
-		this.O = createVector(this.#wide/2, this.#high/2)
 		
 		/*Starting at origin, map x- and y-coordinates 
 		to cartesian style coordinates where (o.x, o.y) is (0,0)*/
 		
-		let Xpos = this.O.x, Ypos = this.O.y;
+		let Xpos = this.#O.x, Ypos = this.#O.y;
 		let x_co = 0, y_co = 0;
 		//starting at origin, move Ypos to bottom of screen
 		while(Ypos < this.#high + this.#inc) {
@@ -208,6 +222,10 @@ class Ortha_Grid{
 			Xpos += this.#cosX;
 		}
 		
+		console.log("Cartesian grid has been mapped...");
+		console.log("grid.O.x = " + this.O.x + "\nXpos at x_co[0] = " + this.COLS.values(0));
+		console.log("grid.O.y = " + this.O.y + "\nYpos at y_co[0] = " + this.ROWS.values(0));
+
 		let s = this.COLS.size + " COLS\n"
 		s += this.ROWS.size + " ROWS\n"
 		console.log(s);		
